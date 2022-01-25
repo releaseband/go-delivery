@@ -24,7 +24,6 @@ func makePostRequest(agent *fiber.Agent, url string) *fiber.Request {
 	req := agent.Request()
 	req.SetRequestURI(url)
 	req.Header.SetMethod("POST")
-	req.Header.SetContentType(applicationJson)
 
 	return req
 }
@@ -94,8 +93,6 @@ func (f FiberClient) Post(
 	for k, v := range headers {
 		req.Header.Set(k, v)
 	}
-
-	req.Header.Set("Content-Type", "application/json")
 
 	return post(ctx, agent, req, url, f.chooseTimeout(timeout))
 }
