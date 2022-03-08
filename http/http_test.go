@@ -13,12 +13,12 @@ import (
 
 func Test_isConnRefused(t *testing.T) {
 	t.Run("false", func(t *testing.T) {
-		if ok := isConnRefused(errors.New("some error")); ok {
+		if ok := IsConnRefused(errors.New("some error")); ok {
 			t.Fatal("should be false")
 		}
 	})
 	t.Run("true", func(t *testing.T) {
-		if ok := isConnRefused(fmt.Errorf("some error: %w", syscall.ECONNREFUSED)); !ok {
+		if ok := IsConnRefused(fmt.Errorf("some error: %w", syscall.ECONNREFUSED)); !ok {
 			t.Fatal("should be true")
 		}
 	})
@@ -64,10 +64,10 @@ func Test_isDeadLineExceededError(t *testing.T) {
 
 	for _, tt := range testCases {
 		t.Run(tt.name, func(t *testing.T) {
-				ok := isDeadlineExceededError(tt.err)
-				if ok != tt.ok {
-					t.Fatal("failed")
-				}
+			ok := IsDeadlineExceededError(tt.err)
+			if ok != tt.ok {
+				t.Fatal("failed")
+			}
 		})
 	}
 }

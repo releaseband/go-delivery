@@ -107,13 +107,6 @@ func newPostHandler(url string, handler func() (int, error)) *postHandler {
 	}
 }
 
-func newTimeoutHandler(url string, timeout time.Duration) *postHandler {
-	return &postHandler{
-		url:     url,
-		timeOut: &struct{ time time.Duration }{time: timeout},
-	}
-}
-
 func (h postHandler) FullPath() string {
 	return h.fullPath
 }
@@ -188,7 +181,7 @@ func Test_send(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			agent := makeAgent(body)
 			req := makePostRequest(agent, tt.url)
-			code, resp, err := send(ctx, agent, req, timeout)
+			resp, code, err := send(ctx, agent, req, timeout)
 			if !errors.Is(err, tt.clientErr) {
 				t.Fatal("error invalid")
 			}
@@ -217,76 +210,6 @@ func Test_send(t *testing.T) {
 			}
 
 			server.Reset()
-		})
-	}
-}
-
-func Test_isEmptyTimeout(t *testing.T) {
-	tests := []struct {
-		name string
-		arg  time.Duration
-		want bool
-	}{
-		{
-			name: "true",
-			arg:  0,
-			want: true,
-		},
-		{
-			name: "false",
-			arg:  time.Second,
-			want: false,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := isEmptyTimeout(tt.arg); got != tt.want {
-				t.Errorf("isEmptyTimeout() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestFiberClient_chooseTimeout(t *testing.T) {
-	const (
-		defaultTimeout = 4 * time.Second
-	)
-
-	tests := []struct {
-		name       string
-		arg        time.Duration
-		defTimeout bool
-	}{
-		{
-			name:       "default timeout",
-			arg:        0,
-			defTimeout: true,
-		},
-		{
-			name:       "external timeout",
-			arg:        1 * time.Second,
-			defTimeout: false,
-		},
-		{
-			name:       "external timeout #2",
-			arg:        time.Microsecond,
-			defTimeout: false,
-		},
-	}
-
-	f := FiberClient{
-		defaultTimeout: defaultTimeout,
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			gotTimeout := f.chooseTimeout(tt.arg)
-			if tt.defTimeout && gotTimeout != defaultTimeout {
-				t.Fatal("invalid timeout: should be equal defaultTimeout")
-			} else if !tt.defTimeout && gotTimeout != tt.arg {
-				t.Fatal("invalid timeout: should be equal timeout from arg")
-			}
 		})
 	}
 }
