@@ -11,10 +11,6 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
-const (
-	applicationJson = "application/json"
-)
-
 var (
 	ErrIntegrationConnectionTimeout = errors.New("connection timed out for integration")
 	ErrIntegrationConnectionRefused = errors.New("integration connection refused")

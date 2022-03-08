@@ -1,4 +1,4 @@
-module github.com/releaseband/go-delivery
+module github.com/releaseband/go-delivery/v2
 
 go 1.17
 
