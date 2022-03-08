@@ -4,9 +4,7 @@ go 1.17
 
 require (
 	github.com/gofiber/fiber/v2 v2.25.0
-	github.com/releaseband/metrics v1.0.0
 	github.com/valyala/fasthttp v1.32.0
-	go.opencensus.io v0.22.5
 )
 
 require (
