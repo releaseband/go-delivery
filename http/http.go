@@ -20,6 +20,10 @@ type Client interface {
 	Post(ctx context.Context, url string, headers map[string]string, body []byte, timeout time.Duration) ([]byte, int, error)
 }
 
+func isFailedHttpCode(code int) bool {
+	return code >= 400
+}
+
 func IsConnRefused(err error) bool {
 	return errors.Is(err, syscall.ECONNREFUSED)
 }
@@ -32,7 +36,7 @@ func IsDeadlineExceededError(err error) bool {
 		strings.Contains(err.Error(), "context deadline exceeded")
 }
 
-func IsKnownError(err error) error {
+func WrapKnownError(err error) error {
 	if IsConnRefused(err) {
 		err = ErrIntegrationConnectionRefused
 	} else if IsDeadlineExceededError(err) {

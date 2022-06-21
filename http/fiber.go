@@ -8,7 +8,9 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-type FiberClient struct{}
+type FiberClient struct {
+	defaultTimeout time.Duration
+}
 
 func NewFiberClient() FiberClient {
 	return FiberClient{}
@@ -33,8 +35,11 @@ func send(ctx context.Context, agent *fiber.Agent, req *fiber.Request, timeout t
 
 	resp := fiber.AcquireResponse()
 
-	if err := agent.DoTimeout(req, resp, timeout); err != nil {
-		err = IsKnownError(err)
+	start := time.Now()
+	err := agent.DoTimeout(req, resp, timeout)
+	record(ctx, start, err == nil)
+	if err != nil {
+		err = WrapKnownError(err)
 
 		return nil, 0, fmt.Errorf("fiber.DoTimeout: timeout=%s: err: %w",
 			timeout.String(), err)
@@ -52,5 +57,14 @@ func (f FiberClient) Post(
 		req.Header.Set(k, v)
 	}
 
-	return send(ctx, agent, req, timeout)
+	resp, code, err := send(ctx, agent, req, timeout)
+	if err != nil {
+		return nil, code, err
+	}
+
+	if isFailedHttpCode(code) {
+		registerHttpStatus(ctx, code)
+	}
+
+	return resp, code, err
 }
