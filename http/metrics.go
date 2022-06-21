@@ -2,12 +2,10 @@ package http
 
 import (
 	"context"
-	_context "github.com/releaseband/metrics/v4/context"
 	"go.opentelemetry.io/otel/metric/unit"
 	"os"
 	"time"
 
-	"github.com/releaseband/metrics/v4"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric/global"
 	"go.opentelemetry.io/otel/metric/instrument"
@@ -32,7 +30,7 @@ var (
 	histogram, _ = meter.SyncFloat64().Histogram(
 		getPrefix()+".http_duration_seconds",
 		instrument.WithDescription("http measures in seconds"),
-		instrument.WithUnit(metrics.Seconds),
+		instrument.WithUnit("sec"),
 	)
 
 	httpStatusCounter, _ = meter.SyncInt64().Counter(
@@ -51,8 +49,8 @@ func makeProjectKey(projectKey string) attribute.KeyValue {
 }
 
 func record(ctx context.Context, start time.Time, isSuccess bool) {
-	end := metrics.SinceInSeconds(start)
-	projectID, _ := _context.GetProjectKey(ctx)
+	end := time.Since(start).Seconds()
+	projectID, _ := GetProjectKey(ctx)
 
 	status := successAttribute
 	if !isSuccess {
@@ -64,7 +62,7 @@ func record(ctx context.Context, start time.Time, isSuccess bool) {
 
 func registerHttpStatus(ctx context.Context, httpCode int) {
 	httpStatus := makeHttpStatusAttribute(httpCode)
-	projectID, _ := _context.GetProjectKey(ctx)
+	projectID, _ := GetProjectKey(ctx)
 
 	httpStatusCounter.Add(ctx, 1, makeProjectKey(projectID), httpStatus)
 }
