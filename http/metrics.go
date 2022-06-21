@@ -24,12 +24,7 @@ var (
 )
 
 func getPrefix() string {
-	prefix := os.Getenv(prefixEnvKey)
-	if prefix == "" {
-		return prefixEnvKey
-	}
-
-	return prefix
+	return os.Getenv(prefixEnvKey)
 }
 
 var (
