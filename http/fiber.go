@@ -28,17 +28,17 @@ func (f FiberClient) Post(
 	body []byte,
 	timeout time.Duration,
 ) ([]byte, int, error) {
-	return f.Do(url, headers, body, timeout)
+	return f.Do(url, MethodPost, headers, body, timeout)
 }
 
 func (f FiberClient) Do(
-	url string,
+	url, method string,
 	headers map[string]string,
 	body []byte,
 	timeout time.Duration,
 ) ([]byte, int, error) {
 	agent := makeAgent(body)
-	req := makeRequest(agent, MethodPost, url)
+	req := makeRequest(agent, method, url)
 
 	for k, v := range headers {
 		req.Header.Set(k, v)
