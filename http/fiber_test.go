@@ -180,7 +180,7 @@ func Test_send(t *testing.T) {
 	for _, tt := range testCases {
 		t.Run(tt.name, func(t *testing.T) {
 			agent := makeAgent(body)
-			req := makePostRequest(agent, tt.url)
+			req := makeRequest(agent, tt.url)
 			resp, code, err := send(ctx, agent, req, timeout)
 			if !errors.Is(err, tt.clientErr) {
 				t.Fatal("error invalid")
