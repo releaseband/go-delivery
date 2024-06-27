@@ -12,8 +12,8 @@ import (
 )
 
 var (
-	ErrIntegrationConnectionTimeout = errors.New("connection timed out for integration")
-	ErrIntegrationConnectionRefused = errors.New("integration connection refused")
+	ErrIntegrationConnectionTimeout = errors.New("connection timed out")
+	ErrIntegrationConnectionRefused = errors.New("connection refused")
 )
 
 type Client interface {
